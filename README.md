@@ -1,5 +1,5 @@
 # quickpick-colorscheme.vim
-Colorscheme picker for [quickpick.vim](https://github.com/prabirshrestha/quickpick-colorscheme.vim).
+Colorscheme picker for [quickpick.vim](https://github.com/prabirshrestha/quickpick.vim).
 
 # Install
 
