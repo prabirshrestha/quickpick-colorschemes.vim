@@ -1,3 +1,5 @@
+let s:matchfuzzy = exists('*matchfuzzy')
+
 function! quickpick#pickers#colorschemes#show(...) abort
     let initial_colorscheme = get(g:, 'colors_name', 'default')
     let id = quickpick#create({
@@ -20,8 +22,16 @@ endfunction
 
 function! s:on_change(id, action, searchterm) abort
     let searchterm = tolower(trim(a:searchterm))
-    let items = empty(searchterm) ? s:get_colorschemes(0) : filter(copy(s:get_colorschemes(0)), {index, item-> stridx(tolower(item), searchterm) > -1})
+    let items = empty(searchterm) ? s:get_colorschemes(0) : s:filter(a:searchterm)
     call quickpick#set_items(a:id, items)
+endfunction
+
+function! s:filter(searchterm) abort
+    if s:matchfuzzy
+        return matchfuzzy(s:get_colorschemes(0), a:searchterm)
+    else
+        return filter(copy(s:get_colorschemes(0)), {index, item-> stridx(tolower(item), a:searchterm) > -1})
+    endif
 endfunction
 
 function! s:on_selection_change(id, action, data) abort
