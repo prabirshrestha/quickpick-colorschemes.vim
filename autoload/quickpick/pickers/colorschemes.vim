@@ -21,9 +21,9 @@ function! s:on_selection(initial_colorscheme, data, ...) abort
   endif
 endfunction
 
-function! s:on_cancel(inital_colorscheme, data, ...) abort
-  if !empty(a:inital_colorscheme)
-    execute 'colorscheme ' . a:inital_colorscheme
+function! s:on_cancel(initial_colorscheme, data, ...) abort
+  if !empty(a:initial_colorscheme)
+    execute 'colorscheme ' . a:initial_colorscheme
   endif
 endfunction
 
