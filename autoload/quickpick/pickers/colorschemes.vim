@@ -3,7 +3,7 @@ function! quickpick#pickers#colorschemes#open() abort
   call quickpick#open({
     \ 'items': uniq(map(split(globpath(&rtp, "colors/*.vim"), "\n"), "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')")),
     \ 'on_accept': function('s:on_accept'),
-    \ 'on_selection': function('s:on_selection'),
+    \ 'on_selection': function('s:on_selection', [l:initial_colorscheme]),
     \ 'on_cancel': function('s:on_cancel', [l:initial_colorscheme]),
     \ })
 endfunction
@@ -13,8 +13,10 @@ function! s:on_accept(data, ...) abort
   execute 'colorscheme ' . a:data['items'][0]
 endfunction
 
-function! s:on_selection(data, ...) abort
-  if !empty(a:data['items'])
+function! s:on_selection(initial_colorscheme, data, ...) abort
+  if empty(a:data['items'])
+    execute 'colorscheme ' . a:initial_colorscheme
+  else
     execute 'colorscheme ' . a:data['items'][0]
   endif
 endfunction
