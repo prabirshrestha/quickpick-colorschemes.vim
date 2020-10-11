@@ -1,50 +1,30 @@
-let s:matchfuzzy = exists('*matchfuzzy')
-
-function! quickpick#pickers#colorschemes#show(...) abort
-    let initial_colorscheme = get(g:, 'colors_name', 'default')
-    let id = quickpick#create({
-        \   'on_change': function('s:on_change'),
-        \   'on_cancel': function('s:on_cancel', [initial_colorscheme]),
-        \   'on_accept': function('s:on_accept'),
-        \   'on_selection_change': function('s:on_selection_change'),
-        \   'items': s:get_colorschemes(0),
-        \ })
-    call quickpick#show(id)
-    return id
+function! quickpick#pickers#colorschemes#open() abort
+  let l:initial_colorscheme = get(g:, 'colors_name', 'default')
+  call quickpick#open({
+    \ 'items': uniq(map(split(globpath(&rtp, "colors/*.vim"), "\n"), "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')")),
+    \ 'on_accept': function('s:on_accept'),
+    \ 'on_selection': function('s:on_selection', [l:initial_colorscheme]),
+    \ 'on_cancel': function('s:on_cancel', [l:initial_colorscheme]),
+    \ })
 endfunction
 
-function! s:get_colorschemes(refresh) abort
-    if !exists('s:colorschemes') || a:refresh
-        let s:colorschemes = uniq(map(split(globpath(&rtp, "colors/*.vim"), "\n"), "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')"))
-    endif
-    return s:colorschemes
+function! s:on_accept(data, ...) abort
+  call quickpick#close()
+  execute 'colorscheme ' . a:data['items'][0]
 endfunction
 
-function! s:on_change(id, action, searchterm) abort
-    let searchterm = tolower(trim(a:searchterm))
-    let items = empty(searchterm) ? s:get_colorschemes(0) : s:filter(a:searchterm)
-    call quickpick#set_items(a:id, items)
-endfunction
-
-function! s:filter(searchterm) abort
-    if s:matchfuzzy
-        return matchfuzzy(s:get_colorschemes(0), a:searchterm)
-    else
-        return filter(copy(s:get_colorschemes(0)), {index, item-> stridx(tolower(item), a:searchterm) > -1})
-    endif
-endfunction
-
-function! s:on_selection_change(id, action, data) abort
-    if !empty(a:data['items'])
-        execute 'colorscheme ' . a:data['items'][0]
-    endif
-endfunction
-
-function! s:on_cancel(inital_colorscheme, id, action, data) abort
-    execute 'colorscheme ' . a:inital_colorscheme
-endfunction
-
-function! s:on_accept(id, action, data) abort
-    call quickpick#close(a:id)
+function! s:on_selection(initial_colorscheme, data, ...) abort
+  if empty(a:data['items'])
+    execute 'colorscheme ' . a:initial_colorscheme
+  else
     execute 'colorscheme ' . a:data['items'][0]
+  endif
 endfunction
+
+function! s:on_cancel(initial_colorscheme, data, ...) abort
+  if !empty(a:initial_colorscheme)
+    execute 'colorscheme ' . a:initial_colorscheme
+  endif
+endfunction
+
+" vim: set sw=2 ts=2 sts=2 et tw=78 foldmarker={{{,}}} foldmethod=marker spell:

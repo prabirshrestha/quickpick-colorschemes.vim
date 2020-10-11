@@ -1,6 +1,6 @@
-if exists('g:quickpick_colorschemes')
+if exists('g:quickpick_colorschemes_loaded')
     finish
 endif
-let g:quickpick_colorschemes = 1
+let g:quickpick_colorschemes_loaded = 1
 
-command! Pcolorschemes call quickpick#pickers#colorschemes#show()
+command! Pcolorchemes call quickpick#pickers#colorschemes#open()
